@@ -1,45 +1,28 @@
-import getOfflineAudioContext, { audioHTML } from "./audio";
-import getCanvas2d, { canvasHTML } from "./canvas";
-import getCSS, { cssHTML } from "./css";
-import getCSSMedia, { cssMediaHTML } from "./cssmedia";
-import getHTMLElementVersion, { htmlElementVersionHTML } from "./document";
-import getClientRects, { clientRectsHTML } from "./domrect";
-import getConsoleErrors, { consoleErrorsHTML } from "./engine";
-import {
-  timer,
-  getCapturedErrors,
-  caniuse,
-  errorsHTML,
-  attempt,
-} from "./errors";
-import getEngineFeatures, { featuresHTML, getFeaturesLie } from "./features";
-import getFonts, { fontsHTML } from "./fonts";
-import getHeadlessFeatures, { headlessFeaturesHTML } from "./headless";
-import getIntl, { intlHTML } from "./intl";
-import { getLies, PARENT_PHANTOM, liesHTML, PROTO_BENCHMARK } from "./lies";
-import getMaths, { mathsHTML } from "./math";
-import getMedia, { mediaHTML } from "./media";
-import getNavigator, { navigatorHTML } from "./navigator";
-import getPrediction, {
-  getBlankIcons,
-  predictionErrorPatch,
-  renderPrediction,
-} from "./prediction";
-import getResistance, { resistanceHTML } from "./resistance";
-import renderSamples, { getSamples, getRawFingerprint } from "./samples";
-import getScreen, { screenHTML } from "./screen";
-import getVoices, { voicesHTML } from "./speech";
-import { getStatus, getStorage, statusHTML } from "./status";
-import getSVG, { svgHTML } from "./svg";
-import getTimezone, { timezoneHTML } from "./timezone";
-import { getTrash, trashHTML } from "./trash";
-import {
-  hashify,
-  hashMini,
-  getBotHash,
-  getFuzzyHash,
-  cipher,
-} from "./utils/crypto";
+import getOfflineAudioContext from "./audio";
+import getCanvas2d from "./canvas";
+import getCSS from "./css";
+import getCSSMedia from "./cssmedia";
+import getHTMLElementVersion from "./document";
+import getClientRects from "./domrect";
+import getConsoleErrors from "./engine";
+import { timer, getCapturedErrors, caniuse } from "./errors";
+import getEngineFeatures, { getFeaturesLie } from "./features";
+import getFonts from "./fonts";
+import getHeadlessFeatures from "./headless";
+import getIntl from "./intl";
+import { getLies, PARENT_PHANTOM, PROTO_BENCHMARK } from "./lies";
+import getMaths from "./math";
+import getMedia from "./media";
+import getNavigator from "./navigator";
+import getResistance from "./resistance";
+import { getRawFingerprint } from "./samples";
+import getScreen from "./screen";
+import getVoices from "./speech";
+import { getStatus, getStorage } from "./status";
+import getSVG from "./svg";
+import getTimezone from "./timezone";
+import { getTrash } from "./trash";
+import { hashify, hashMini, getBotHash, getFuzzyHash } from "./utils/crypto";
 import { exile, getStackBytes, getTTFB, measure } from "./utils/exile";
 import {
   IS_BLINK,
@@ -48,24 +31,16 @@ import {
   getBraveUnprotectedParameters,
   computeWindowsRelease,
   hashSlice,
-  ENGINE_IDENTIFIER,
-  getUserAgentRestored,
-  attemptWindows11UserAgent,
   LowerEntropy,
   queueTask,
   Analysis,
 } from "./utils/helpers";
-import { patch, html, getDiffs, modal, HTMLNote } from "./utils/html";
-import getCanvasWebgl, { webglHTML } from "./webgl";
-import getWebRTCData, { getWebRTCDevices, webrtcHTML } from "./webrtc";
-import getWindowFeatures, { windowFeaturesHTML } from "./window";
-import getBestWorkerScope, {
-  Scope,
-  spawnWorker,
-  workerScopeHTML,
-} from "./worker";
+import getCanvasWebgl from "./webgl";
+import getWebRTCData, { getWebRTCDevices } from "./webrtc";
+import getWindowFeatures from "./window";
+import getBestWorkerScope, { Scope, spawnWorker } from "./worker";
 
-!(async function () {
+export async function getCreep() {
   "use strict";
 
   const scope = await spawnWorker();
@@ -842,9 +817,7 @@ import getBestWorkerScope, {
     timingRes: stat?.timingRes,
     tmSum,
     rtt: stat?.rtt,
-    networkType: stat?.downlink
-      ? [stat?.effectiveType, stat?.type]
-      : undefined,
+    networkType: stat?.downlink ? [stat?.effectiveType, stat?.type] : undefined,
     webRTCFoundation: webRTC?.foundation,
     webRTCCodecs: webRTC?.codecsSdp
       ? (await hashify(webRTC.codecsSdp)).slice(0, 16)
@@ -901,4 +874,18 @@ import getBestWorkerScope, {
     summary: secret,
     browser: RAW_BODY,
   };
+}
+
+!(async function () {
+  const creepData = await getCreep();
+  console.log(creepData);
+  // Set clear fingerprint-header class in document
+  let fingerprint_header =
+    document.getElementsByClassName("fingerprint-header");
+  if (fingerprint_header.length > 0) {
+    if (creepData) {
+      fingerprint_header[0].innerHTML =
+        '<div class="ellipsis-all">FP ID: ' + creepData.summary.id + "</div>";
+    }
+  }
 })();
