@@ -858,7 +858,6 @@ import getBestWorkerScope, {
     measured,
     ttfb,
   };
-  console.log(RAW_BODY);
 
   // fetch fingerprint data from server
   const id = "creep-browser";
@@ -898,7 +897,6 @@ import getBestWorkerScope, {
     screenHash: fp.screen?.$hash.slice(0, 8),
     timeZoneHash: fp.timezone?.$hash.slice(0, 8),
   };
-  console.log(secret);
   return {
     summary: secret,
     browser: RAW_BODY,
