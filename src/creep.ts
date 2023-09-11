@@ -901,7 +901,8 @@ export default getCreep;
       JSON.stringify(creepData),
       creepKey
     ).toString();
-    console.log({ key: creepKey, data: encryptedCreep });
+    // console.log({ key: creepKey, data: encryptedCreep });
+    console.log(creepData)
 
     // Navigate to /finger with a POST request using a form
     const form = document.createElement("form");
