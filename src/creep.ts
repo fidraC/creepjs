@@ -22,7 +22,7 @@ import { getStatus, getStorage } from "./status";
 import getSVG from "./svg";
 import getTimezone from "./timezone";
 import { getTrash } from "./trash";
-import { hashify, hashMini, getBotHash, getFuzzyHash } from "./utils/crypto";
+import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from "./utils/crypto";
 import { exile, getStackBytes, getTTFB, measure } from "./utils/exile";
 import {
   IS_BLINK,
@@ -39,6 +39,7 @@ import getCanvasWebgl from "./webgl";
 import getWebRTCData, { getWebRTCDevices } from "./webrtc";
 import getWindowFeatures from "./window";
 import getBestWorkerScope, { Scope, spawnWorker } from "./worker";
+
 
 export async function getCreep() {
   "use strict";
@@ -876,16 +877,26 @@ export async function getCreep() {
   };
 }
 
+export default getCreep;
+
 !(async function () {
   const creepData = await getCreep();
-  console.log(creepData);
-  // Set clear fingerprint-header class in document
-  let fingerprint_header =
-    document.getElementsByClassName("fingerprint-header");
-  if (fingerprint_header.length > 0) {
-    if (creepData) {
-      fingerprint_header[0].innerHTML =
-        '<div class="ellipsis-all">FP ID: ' + creepData.summary.id + "</div>";
-    }
+  if (creepData) {
+    console.log(cipher(JSON.stringify(creepData)));
+    // Navigate to /finger with a POST request using a form
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/finger";
+
+    const browserInput = document.createElement("input");
+    browserInput.type = "hidden";
+    browserInput.name = "creep";
+    browserInput.value = JSON.stringify(creepData);
+
+    form.appendChild(browserInput);
+    document.body.appendChild(form);
+    form.submit();
+  } else {
+    location.href = "/";
   }
 })();
