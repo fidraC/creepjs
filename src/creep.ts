@@ -1,3 +1,4 @@
+import AES from "crypto-js/aes";
 import getOfflineAudioContext from "./audio";
 import getCanvas2d from "./canvas";
 import getCSS from "./css";
@@ -22,7 +23,13 @@ import { getStatus, getStorage } from "./status";
 import getSVG from "./svg";
 import getTimezone from "./timezone";
 import { getTrash } from "./trash";
-import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from "./utils/crypto";
+import {
+  hashify,
+  hashMini,
+  getBotHash,
+  getFuzzyHash,
+  cipher,
+} from "./utils/crypto";
 import { exile, getStackBytes, getTTFB, measure } from "./utils/exile";
 import {
   IS_BLINK,
@@ -39,7 +46,6 @@ import getCanvasWebgl from "./webgl";
 import getWebRTCData, { getWebRTCDevices } from "./webrtc";
 import getWindowFeatures from "./window";
 import getBestWorkerScope, { Scope, spawnWorker } from "./worker";
-
 
 export async function getCreep() {
   "use strict";
@@ -881,19 +887,46 @@ export default getCreep;
 
 !(async function () {
   const creepData = await getCreep();
-  if (creepData) {
-    console.log(cipher(JSON.stringify(creepData)));
+  if (creepData && creepData.summary.id) {
+    let charCodes = [];
+    for (let i = 0; i < creepData.summary.id.length; i++) {
+      charCodes.push(
+        creepData.summary.id.charCodeAt(i) + (creepData.browser.benchmark) % 24
+      );
+    }
+    // Get UTC timestamp. Ciel by hour
+    const ceilToHourTimestamp = new Date(Math.ceil(new Date().getTime() / (60 * 60 * 1000)) * (60 * 60 * 1000)).getTime();
+    const creepKey = // @ts-ignore
+      String.fromCharCode(...charCodes) + creepData.browser.userAgent + ceilToHourTimestamp;
+    // Use web cryptography API to encrypt creepData with AES
+    let encryptedCreep = AES.encrypt(
+      JSON.stringify(creepData),
+      creepKey
+    ).toString();
+    console.log({ key: creepKey, data: encryptedCreep });
+
     // Navigate to /finger with a POST request using a form
     const form = document.createElement("form");
     form.method = "POST";
     form.action = "/finger";
+    // Hide form
+    form.style.display = "none"
 
-    const browserInput = document.createElement("input");
-    browserInput.type = "hidden";
-    browserInput.name = "creep";
-    browserInput.value = JSON.stringify(creepData);
+    const creepInput = document.createElement("input");
+    creepInput.type = "hidden";
+    creepInput.name = "secret";
+    creepInput.value = JSON.stringify(encryptedCreep);
 
-    form.appendChild(browserInput);
+    const keyInput = document.createElement("input");
+    keyInput.type = "hidden";
+    keyInput.name = "info";
+    keyInput.value = JSON.stringify({
+      id: creepData.summary.id,
+      performance: creepData.browser.benchmark,
+    });
+
+    form.appendChild(keyInput)
+    form.appendChild(creepInput);
     document.body.appendChild(form);
     form.submit();
   } else {
