@@ -1,5 +1,4 @@
 import AES from "crypto-js/aes";
-import MD5 from "crypto-js/md5"
 import getOfflineAudioContext from "./audio";
 import getCanvas2d from "./canvas";
 import getCSS from "./css";
@@ -24,13 +23,7 @@ import { getStatus, getStorage } from "./status";
 import getSVG from "./svg";
 import getTimezone from "./timezone";
 import { getTrash } from "./trash";
-import {
-  hashify,
-  hashMini,
-  getBotHash,
-  getFuzzyHash,
-  cipher,
-} from "./utils/crypto";
+import { hashify, hashMini, getBotHash, getFuzzyHash } from "./utils/crypto";
 import { exile, getStackBytes, getTTFB, measure } from "./utils/exile";
 import {
   IS_BLINK,
@@ -892,13 +885,17 @@ export default getCreep;
     let charCodes = [];
     for (let i = 0; i < creepData.summary.id.length; i++) {
       charCodes.push(
-        (creepData.summary.id.charCodeAt(i) + (creepData.browser.benchmark)) % 24
+        creepData.summary.id.charCodeAt(i) + (creepData.browser.benchmark % 24)
       );
     }
     // Get UTC timestamp. Ciel by hour
-    const ceilToHourTimestamp = new Date(Math.ceil(new Date().getTime() / (60 * 60 * 1000)) * (60 * 60 * 1000)).getTime();
+    const ceilToHourTimestamp = new Date(
+      Math.ceil(new Date().getTime() / (60 * 60 * 1000)) * (60 * 60 * 1000)
+    ).getTime();
     const creepKey = // @ts-ignore
-      MD5(String.fromCharCode(...charCodes) + creepData.browser.userAgent + ceilToHourTimestamp);
+      String.fromCharCode(...charCodes) +
+      creepData.browser.userAgent +
+      ceilToHourTimestamp;
     // Use web cryptography API to encrypt creepData with AES
     let encryptedCreep = AES.encrypt(
       JSON.stringify(creepData),
@@ -911,7 +908,7 @@ export default getCreep;
     form.method = "POST";
     form.action = "/finger";
     // Hide form
-    form.style.display = "none"
+    form.style.display = "none";
 
     const creepInput = document.createElement("input");
     creepInput.type = "hidden";
@@ -926,7 +923,7 @@ export default getCreep;
       performance: creepData.browser.benchmark,
     });
 
-    form.appendChild(keyInput)
+    form.appendChild(keyInput);
     form.appendChild(creepInput);
     document.body.appendChild(form);
     form.submit();
