@@ -1,4 +1,5 @@
 import AES from "crypto-js/aes";
+import MD5 from "crypto-js/md5"
 import getOfflineAudioContext from "./audio";
 import getCanvas2d from "./canvas";
 import getCSS from "./css";
@@ -891,13 +892,13 @@ export default getCreep;
     let charCodes = [];
     for (let i = 0; i < creepData.summary.id.length; i++) {
       charCodes.push(
-        creepData.summary.id.charCodeAt(i) + (creepData.browser.benchmark) % 24
+        (creepData.summary.id.charCodeAt(i) + (creepData.browser.benchmark)) % 24
       );
     }
     // Get UTC timestamp. Ciel by hour
     const ceilToHourTimestamp = new Date(Math.ceil(new Date().getTime() / (60 * 60 * 1000)) * (60 * 60 * 1000)).getTime();
     const creepKey = // @ts-ignore
-      String.fromCharCode(...charCodes) + creepData.browser.userAgent + ceilToHourTimestamp;
+      MD5(String.fromCharCode(...charCodes) + creepData.browser.userAgent + ceilToHourTimestamp);
     // Use web cryptography API to encrypt creepData with AES
     let encryptedCreep = AES.encrypt(
       JSON.stringify(creepData),
