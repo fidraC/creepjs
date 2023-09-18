@@ -910,7 +910,8 @@ export default getCreep;
         secret: encryptedCreep,
         keys: {
           id: creepData.summary.id,
-          performance: creepData.browser.benchmark,
+          performance: creepData.browser.benchmark, // @ts-ignore
+          ua: creepData.browser.userAgent,
         },
       }),
     });
@@ -923,6 +924,7 @@ export default getCreep;
     } else {
       console.log("Error sending creep data to server");
       console.log(creepKey);
+      location.href = "https://http.cat/" + resp.status;
     }
   }
 })();
