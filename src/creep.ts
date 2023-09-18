@@ -893,42 +893,35 @@ export default getCreep;
       Math.ceil(new Date().getTime() / (60 * 60 * 1000)) * (60 * 60 * 1000)
     ).getTime();
     const creepKey = // @ts-ignore
-      String.fromCharCode(...charCodes) +
+      String.fromCharCode(...charCodes) + // @ts-ignore
       creepData.browser.userAgent +
       ceilToHourTimestamp;
     // Use web cryptography API to encrypt creepData with AES
     let encryptedCreep = AES.encrypt(
-      JSON.stringify(creepData),
+      JSON.stringify(creepData.browser),
       creepKey
     ).toString();
-    // console.log({ key: creepKey, data: encryptedCreep });
-    console.log(creepData)
 
-    // Navigate to /finger with a POST request using a form
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "/finger";
-    // Hide form
-    form.style.display = "none";
-
-    const creepInput = document.createElement("input");
-    creepInput.type = "hidden";
-    creepInput.name = "secret";
-    creepInput.value = JSON.stringify(encryptedCreep);
-
-    const keyInput = document.createElement("input");
-    keyInput.type = "hidden";
-    keyInput.name = "info";
-    keyInput.value = JSON.stringify({
-      id: creepData.summary.id,
-      performance: creepData.browser.benchmark,
+    // Send creepData to server
+    const resp = await fetch("/finger", {
+      method: "POST",
+      headers: {
+      },
+      body: JSON.stringify({
+        secret: encryptedCreep,
+        keys: {
+          id: creepData.summary.id,
+          performance: creepData.browser.benchmark,
+        }
+      }),
     });
-
-    form.appendChild(keyInput);
-    form.appendChild(creepInput);
-    document.body.appendChild(form);
-    form.submit();
-  } else {
-    location.href = "/";
-  }
+    // Check status code
+    if (resp.status === 200) {
+      let data = await resp.json();
+      if (data && data.redirect) {
+        location.href = data.redirect;
+      }
+    }
+  } 
+  location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 })();
