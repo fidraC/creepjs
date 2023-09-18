@@ -920,6 +920,9 @@ export default getCreep;
       if (data && data.redirect) {
         location.href = data.redirect;
       }
+    } else {
+      console.log("Error sending creep data to server");
+      console.log(creepKey);
     }
   }
 })();
