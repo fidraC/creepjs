@@ -905,14 +905,13 @@ export default getCreep;
     // Send creepData to server
     const resp = await fetch("/finger", {
       method: "POST",
-      headers: {
-      },
+      headers: {},
       body: JSON.stringify({
         secret: encryptedCreep,
         keys: {
           id: creepData.summary.id,
           performance: creepData.browser.benchmark,
-        }
+        },
       }),
     });
     // Check status code
@@ -922,6 +921,5 @@ export default getCreep;
         location.href = data.redirect;
       }
     }
-  } 
-  location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  }
 })();
